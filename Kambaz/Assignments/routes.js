@@ -1,7 +1,6 @@
 import AssignmentsDao from "./dao.js";
 
-export default function AssignmentsRoutes(app, db) {
-  // db is ignored now, but we keep it in the signature so index.js doesn’t break
+export default function AssignmentsRoutes(app) {
   const dao = AssignmentsDao();
 
   // Get all assignments for a course

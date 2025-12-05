@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 
 const DEFAULT_IMAGE = "/images/NU_CMYK_Notched-N_motto_RW.png"
 
-export default function CoursesDao(_db) {
+export default function CoursesDao() {
   function findAllCourses() {
     return model.find({});
   }

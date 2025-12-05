@@ -1,7 +1,7 @@
 import ModulesDao from "../Modules/dao.js";
 
-export default function ModulesRoutes(app, db) {
-  const dao = ModulesDao(db);
+export default function ModulesRoutes(app) {
+  const dao = ModulesDao();
 
   const findModulesForCourse = async (req, res) => {
     const { courseId } = req.params;
