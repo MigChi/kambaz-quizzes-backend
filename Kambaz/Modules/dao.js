@@ -1,40 +1,45 @@
 import { v4 as uuidv4 } from "uuid";
-import coursesModel from "../Courses/model.js";
+import model from "../Courses/model.js";
 
-export const findModulesForCourse = async (courseId) => {
-  const course = await coursesModel.findById(courseId);
-  return course?.modules ?? [];
-};
+export default function ModulesDao(_db) {
+  async function findModulesForCourse(courseId) {
+    const course = await model.findById(courseId);
+    return course?.modules || [];
+  }
 
-export const createModule = async (courseId, module) => {
-  const newModule = {
-    _id: module._id || uuidv4(),
-    lessons: module.lessons ?? [],
-    ...module,
+  async function createModule(courseId, module) {
+    const newModule = { ...module, _id: uuidv4() };
+    await model.updateOne(
+      { _id: courseId },
+      { $push: { modules: newModule } }
+    );
+    return newModule;
+  }
+
+  async function deleteModule(courseId, moduleId) {
+    const status = await model.updateOne(
+      { _id: courseId },
+      { $pull: { modules: { _id: moduleId } } }
+    );
+    return status;
+  }
+
+  async function updateModule(courseId, moduleId, moduleUpdates) {
+    const course = await model.findById(courseId);
+    if (!course) return null;
+
+    const module = course.modules.id(moduleId);
+    if (!module) return null;
+
+    Object.assign(module, moduleUpdates);
+    await course.save();
+    return module;
+  }
+
+  return {
+    findModulesForCourse,
+    createModule,
+    deleteModule,
+    updateModule,
   };
-  await coursesModel.updateOne(
-    { _id: courseId },
-    { $push: { modules: newModule } }
-  );
-  return newModule;
-};
-
-export const deleteModule = (courseId, moduleId) =>
-  coursesModel.updateOne(
-    { _id: courseId },
-    { $pull: { modules: { _id: moduleId } } }
-  );
-
-export const updateModule = async (courseId, moduleId, moduleUpdates) => {
-  const course = await coursesModel.findById(courseId);
-  if (!course) {
-    return null;
-  }
-  const module = course.modules.id(moduleId);
-  if (!module) {
-    return null;
-  }
-  Object.assign(module, moduleUpdates);
-  await course.save();
-  return module;
-};
+}

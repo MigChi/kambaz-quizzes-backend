@@ -1,27 +1,33 @@
-import { v4 as uuidv4 } from "uuid";
 import model from "./model.js";
-import Database from "../Database/index.js";
+import { v4 as uuidv4 } from "uuid";
 
-export const findAllCourses = () => model.find();
+export default function CoursesDao(_db) {
+  function findAllCourses() {
+    // Only send name + description (and _id by default)
+    return model.find({}, { name: 1, description: 1 });
+  }
 
-export const findCourseById = (courseId) => model.findById(courseId);
+  // NOTE: This is no longer used; the route now uses enrollmentsDao.findCoursesForUser()
+  // so we don't define findCoursesForEnrolledUser anymore.
 
-export const createCourse = (course) =>
-  model.create({
-    ...course,
-    _id: course._id || uuidv4(),
-    modules: course.modules ?? [],
-  });
+  function createCourse(course) {
+    const newCourse = { ...course, _id: uuidv4() };
+    return model.create(newCourse);
+  }
 
-export const deleteCourse = (courseId) => model.deleteOne({ _id: courseId });
+  function deleteCourse(courseId) {
+    // All enrollment cleanup is now done in EnrollmentsDao
+    return model.deleteOne({ _id: courseId });
+  }
 
-export const updateCourse = (courseId, courseUpdates) =>
-  model.updateOne({ _id: courseId }, { $set: courseUpdates });
+  function updateCourse(courseId, courseUpdates) {
+    return model.updateOne({ _id: courseId }, { $set: courseUpdates });
+  }
 
-export const findCoursesForEnrolledUser = (userId) => {
-  const { enrollments } = Database;
-  const enrolledCourseIds = enrollments
-    .filter((e) => e.user === userId)
-    .map((e) => e.course);
-  return model.find({ _id: { $in: enrolledCourseIds } });
-};
+  return {
+    findAllCourses,
+    createCourse,
+    deleteCourse,
+    updateCourse,
+  };
+}

@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
 
-const schema = new mongoose.Schema(
+const enrollmentSchema = new mongoose.Schema(
   {
     _id: String,
     course: { type: String, ref: "CourseModel" },
-    user: { type: String, ref: "UserModel" },
+    user:   { type: String, ref: "UserModel" },
     grade: Number,
     letterGrade: String,
     enrollmentDate: Date,
@@ -17,4 +17,4 @@ const schema = new mongoose.Schema(
   { collection: "enrollments" }
 );
 
-export default schema;
+export default enrollmentSchema;
