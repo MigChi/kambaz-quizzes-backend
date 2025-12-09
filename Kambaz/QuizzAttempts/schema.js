@@ -31,9 +31,20 @@ const quizAttemptSchema = new mongoose.Schema(
       {
         questionId: String,
         answerType: String, // "MULTIPLE_CHOICE" | "TRUE_FALSE" | "FILL_BLANK"
-        selectedChoiceId: String,
+        selectedChoiceIds: {
+          type: [String],
+          default: [],
+        },
         trueFalseSelection: String,
-        fillBlankResponse: String,
+        fillBlankResponses: {
+          type: [
+            {
+              blankId: String,
+              response: String,
+            },
+          ],
+          default: [],
+        },
         isCorrect: Boolean,
         earnedPoints: Number,
       },
